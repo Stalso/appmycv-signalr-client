@@ -4,6 +4,7 @@ import logo from './logo.svg';
 import './App.css';
 
 let connection = null;
+let chatConnection = null;
 
 class App extends Component {
   constructor(props) {
@@ -19,15 +20,26 @@ class App extends Component {
     if (connection) {
       connection.stop();
     }
-    // connection = new HubConnectionBuilder().withUrl("http://localhost:61840/notificationhub", {
-    //   accessTokenFactory: () => this.state.token
-    // }).configureLogging(LogLevel.Debug).build();
-
-    connection = new HubConnectionBuilder().withUrl("http://62.138.14.236:5006/notificationhub", {
+    if (chatConnection) {
+      chatConnection.stop();
+    }
+    connection = new HubConnectionBuilder().withUrl("http://localhost:61840/notificationhub", {
       accessTokenFactory: () => this.state.token
     }).configureLogging(LogLevel.Debug).build();
 
+    // connection = new HubConnectionBuilder().withUrl("http://62.138.14.236:5006/notificationhub", {
+    //   accessTokenFactory: () => this.state.token
+    // }).configureLogging(LogLevel.Debug).build();
+
     connection.start().catch(function (err) {
+      return console.error(err.toString());
+    });
+
+    chatConnection = new HubConnectionBuilder().withUrl("http://localhost:61840/messaginghub", {
+      accessTokenFactory: () => this.state.token
+    }).configureLogging(LogLevel.Debug).build();
+
+    chatConnection.start().catch(function (err) {
       return console.error(err.toString());
     });
 
@@ -39,6 +51,73 @@ class App extends Component {
       console.log("CompanyUserNotificationAdded: ", serverObj);
     });
 
+    chatConnection.on("NewThreadStarted", (serverObj) => {
+      console.log("NewThreadStarted: ", serverObj);
+    });
+
+    chatConnection.on("PlanUserAddedToThread", (serverObj) => {
+      console.log("PlanUserAddedToThread: ", serverObj);
+    });
+
+    chatConnection.on("CompanyUserAddedToThread", (serverObj) => {
+      console.log("CompanyUserAddedToThread: ", serverObj);
+    });
+
+    chatConnection.on("WholeCompanyAddedToThread", (serverObj) => {
+      console.log("WholeCompanyAddedToThread: ", serverObj);
+    });
+
+    chatConnection.on("UserOnline", (serverObj) => {
+      console.log("UserOnline: ", serverObj);
+    });
+
+    chatConnection.on("UserOffline", (serverObj) => {
+      console.log("UserOffline: ", serverObj);
+    });
+
+    chatConnection.on("YouWereRemovedFromThread", (serverObj) => {
+      console.log("YouWereRemovedFromThread: ", serverObj);
+    });
+
+    chatConnection.on("PlanUserRemovedFromThread", (serverObj) => {
+      console.log("PlanUserRemovedFromThread: ", serverObj);
+    });
+
+    chatConnection.on("CompanyUserRemovedFromThread", (serverObj) => {
+      console.log("CompanyUserRemovedFromThread: ", serverObj);
+    });
+
+    chatConnection.on("CompanyRemovedFromThread", (serverObj) => {
+      console.log("CompanyRemovedFromThread: ", serverObj);
+    });
+
+    chatConnection.on("YouLeavedThread", (serverObj) => {
+      console.log("YouLeavedThread: ", serverObj);
+    });
+
+    chatConnection.on("CompanyUserLeavedThread", (serverObj) => {
+      console.log("CompanyUserLeavedThread: ", serverObj);
+    });
+
+    chatConnection.on("PlanUserLeavedThread", (serverObj) => {
+      console.log("PlanUserLeavedThread: ", serverObj);
+    });
+
+    chatConnection.on("NewMessageInThread", (serverObj) => {
+      console.log("NewMessageInThread: ", serverObj);
+    });
+
+    chatConnection.on("FirstMessageRead", (serverObj) => {
+      console.log("FirstMessageRead: ", serverObj);
+    });
+
+    chatConnection.on("LastMessageRead", (serverObj) => {
+      console.log("LastMessageRead: ", serverObj);
+    });
+
+    chatConnection.on("MessagesRemovedFromThread", (serverObj) => {
+      console.log("MessagesRemovedFromThread: ", serverObj);
+    });
   }
 
   render() {
